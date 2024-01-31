@@ -9,6 +9,7 @@ A simple and interactive Color extractor created with Python.
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
 - [License](#license)
+- [Support Me](#support)
 
 ## Overview
 
@@ -46,3 +47,11 @@ If you'd like to contribute to the project, please follow the guidelines in [Con
 ## License
 
 This project is licensed under the [MIT License](LICENSE.md).
+
+## Support Me
+
+If you find my work helpful or inspiring and would like to support me, you can buy me a coffee!
+
+[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-red.png)]([https://www.buymeacoffee.com/santhoshkumar2298])
+
+Your support is greatly appreciated!
