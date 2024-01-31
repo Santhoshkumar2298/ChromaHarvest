@@ -20,6 +20,7 @@ ChromaHarvest which was created using Python allows you to extract colors from i
 - Upload image files for color extraction.
 - Supports both JPG and PNG image formats.
 - Display RGB and HEX values of extracted colors.
+- Download the color codes in .Csv format.
 
 
 ## Getting Started

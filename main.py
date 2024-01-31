@@ -3,6 +3,38 @@ from file_extract import FileExtract
 from url_extract import UrlExtract
 from datetime import datetime
 
+
+# -------------------- FUNCTIONS ------------------- #
+def open_url_extract():
+    # OPENING URL COLOR EXTRACT PAGE
+    destroy_home()
+    UrlExtract(canvas, go_home_callback)
+
+
+def open_file_extract():
+    # OPENING FILE COLOR EXTRACT PAGE
+    destroy_home()
+    FileExtract(canvas, go_home_callback)
+
+
+def destroy_home():
+    # DESTROYING HOME ELEMENTS WHEN NAVIGATE TO OTHER PAGE
+    global img_extract_btn, url_extract_btn
+    canvas.delete("all")
+    img_extract_btn.destroy()
+    url_extract_btn.destroy()
+
+    # CREATING BACKGROUND IMAGE FOR NAVIGATING PAGE
+    canvas.create_image(400, 260, image=extract_img)
+
+
+def go_home_callback():
+    # RECREATING HOME CONTENT WHEN NAVIGATING TO HOME AGAIN
+    canvas.delete("all")
+    home()
+
+
+# -----------------------------UI CONFIGURATIONS---------------------------------------- #
 # Creating Window
 window = Tk()
 window.title("Chroma_Harvest_v1.0 ©SANTHOSHKUMAR_V. All rights reserved")
@@ -54,35 +86,6 @@ def home():
     # COPYRIGHT TEXT
     canvas.create_text((375, 480), text=f"{current_year} © Santhoshkumar_V. All rights reserved", fill='#FF004D',
                        font=("arial", 8, "bold"))
-
-
-def open_url_extract():
-    # OPENING URL COLOR EXTRACT PAGE
-    destroy_home()
-    UrlExtract(canvas, go_home_callback)
-
-
-def open_file_extract():
-    # OPENING FILE COLOR EXTRACT PAGE
-    destroy_home()
-    FileExtract(canvas, go_home_callback)
-
-
-def destroy_home():
-    # DESTROYING HOME ELEMENTS WHEN NAVIGATE TO OTHER PAGE
-    global img_extract_btn, url_extract_btn
-    canvas.delete("all")
-    img_extract_btn.destroy()
-    url_extract_btn.destroy()
-
-    # CREATING BACKGROUND IMAGE FOR NAVIGATING PAGE
-    canvas.create_image(400, 260, image=extract_img)
-
-
-def go_home_callback():
-    # RECREATING HOME CONTENT WHEN NAVIGATING TO HOME AGAIN
-    canvas.delete("all")
-    home()
 
 
 home()

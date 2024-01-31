@@ -1,4 +1,6 @@
 from tkinter import *
+from tkinter import filedialog, messagebox
+
 import requests as r
 import io
 from PIL import ImageTk
@@ -29,11 +31,18 @@ class UrlExtract:
                                   highlightthickness=0, command=self.go_home_callback)
         self.home_button.place(x=50, y=30)
 
+        # BUTTON TO DOWNLOAD THE COLOURS IN CSV
+        self.download_btn = Button(text="Download", font=("Verdana", 10, "bold"), bg="purple", fg="white",
+                                   highlightthickness=0, command=self.download)
+
         # INITIATING REQUIRED ELEMENTS
         self.image_canvas = None
         self.final_image = None
         self.left_canvas = None
         self.right_canvas = None
+        self.failed_label = None
+        self.rgb_colors = []
+        self.hex_codes = []
 
     def load_img(self):
         # GET THE ENTERED URL FROM INPUT URL
@@ -42,6 +51,8 @@ class UrlExtract:
         try:
             # SEND THE REQUEST TO THE ENTERED URL AND GET THE RESPONSE
             response = r.get(url_entered)
+            response.raise_for_status()
+
             if response.status_code == 200:
                 # CONVERTING THE BYTE DATA FROM RESPONSE TO IMAGE
                 image_data = response.content
@@ -61,24 +72,28 @@ class UrlExtract:
                 self.image_canvas.delete("all")
                 self.image_canvas.create_image(75, 75, anchor="center", image=self.final_image)
 
+                # SHOW THE DOWNLOAD BUTTON
+                self.download_btn.place(x=600, y=60)
+
                 # CALLING GENERATE COLOR FUNCTION
                 self.generate_color(url_entered)
 
             else:
                 # SHOWING FAILED MESSAGE WHEN THE URL IS INVALID OR NO INTERNET CONNECTION FOR MAKING REQUEST
-                failed_label = self.canvas.create_text((375, 100), text="URL IS INVALID or\nCHECK INTERNET CONNECTION",
-                                                       font=("Verdana", 8, "bold"), fill="red")
+                self.failed_label = self.canvas.create_text((375, 100),
+                                                            text="URL IS INVALID or\nCHECK INTERNET CONNECTION",
+                                                            font=("Verdana", 8, "bold"), fill="red")
 
                 # DESTROYING FAILED MESSAGE AFTER 5 SECONDS
-                self.canvas.after(5000, lambda: self.canvas.delete(failed_label))
+                self.canvas.after(5000, lambda: self.canvas.delete(self.failed_label))
 
         except Exception as e:
             print(f"An error occurred: {e}")
             # SHOWING FAILED MESSAGE WHEN THE RESPONSE IS FAILED OR ERROR RESPONSE
-            failed_label = self.canvas.create_text((375, 100), text=f"Error Occurred : {e}",
-                                                   font=("Verdana", 8, "bold"), fill="red")
+            self.failed_label = self.canvas.create_text((375, 100), text=f"Error Occurred : {e}",
+                                                        font=("Verdana", 8, "bold"), fill="red")
             self.image_canvas.destroy()
-            self.canvas.after(5000, lambda: self.canvas.delete(failed_label))
+            self.canvas.after(5000, lambda: self.canvas.delete(self.failed_label))
 
     def generate_color(self, url):
         # GENERATING THE COLOR PALETTE FROM THE IMAGE URL USING colourpycker LIBRARY
@@ -109,6 +124,7 @@ class UrlExtract:
                 self.left_canvas.create_text((50, 50 + margin), text=hex_code, font=("Verdana", 8, "bold"),
                                              fill="black", state=NORMAL)
                 self.left_canvas.create_rectangle(220, 40 + margin, 270, 70 + margin, fill=hex_code)
+                self.hex_codes.append(hex_code)
 
                 margin += 40
 
@@ -117,6 +133,8 @@ class UrlExtract:
             for rgb_code in first_five["RGB"]:
                 self.left_canvas.create_text((150, 50 + margin), text=rgb_code, font=("Verdana", 8, "bold"),
                                              fill="black")
+                self.rgb_colors.append(rgb_code)
+
                 margin += 40
 
         # CREATING CANVAS FOR POPULATING REMAINING COLORS
@@ -138,6 +156,7 @@ class UrlExtract:
                 self.right_canvas.create_text((50, 50 + margin), text=hex_code, font=("Verdana", 8, "bold"),
                                               fill="black", state=NORMAL)
                 self.right_canvas.create_rectangle(220, 40 + margin, 270, 70 + margin, fill=hex_code)
+                self.hex_codes.append(hex_code)
 
                 margin += 40
 
@@ -147,7 +166,26 @@ class UrlExtract:
             for rgb_code in remaining_ten["RGB"]:
                 self.right_canvas.create_text((150, 50 + margin), text=rgb_code, font=("Verdana", 8, "bold"),
                                               fill="black")
+                self.rgb_colors.append(rgb_code)
                 margin += 40
+
+    def download(self):
+        # CREATING DATAFRAME USING HEX AND RGB CODE FOR DOWNLOAD CSV
+        data = {
+            "Hex Code": self.hex_codes,
+            "RGB Code": self.rgb_colors
+        }
+        df = pd.DataFrame(data)
+        df.index = df.index + 1
+
+        # ASKING DIRECTORY TO STORE THE CSV FILE
+        file_path = filedialog.asksaveasfilename(defaultextension=".csv",
+                                                 filetypes=[("CSV files", "*.csv")],
+                                                 initialfile=f"colors_url_image.csv")
+        if file_path:
+            df.to_csv(file_path)
+            messagebox.showinfo("Information", f"Color data downloaded successfully in "
+                                               f"\n\n{file_path}")
 
     def destroy_items(self):
         # DESTROY ITEMS IN CANVAS WHEN USER ENTERS DIFFERENT IMAGE URL
@@ -157,6 +195,9 @@ class UrlExtract:
             self.left_canvas.destroy()
         if self.right_canvas is not None:
             self.right_canvas.destroy()
+        if self.failed_label is not None:
+            self.canvas.delete(self.failed_label)
+        self.download_btn.place_forget()
 
     def go_home_callback(self):
         # DESTROY ITEMS IN WINDOW WHEN USER TRY TO GET BACK TO HOMEPAGE

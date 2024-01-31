@@ -1,8 +1,9 @@
 from tkinter import *
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
 import os
 import colorgram
+import pandas as pd
 
 
 class FileExtract:
@@ -25,6 +26,10 @@ class FileExtract:
                                   highlightthickness=0, command=self.go_home_callback)
         self.home_button.place(x=50, y=30)
 
+        # BUTTON TO DOWNLOAD THE COLOURS IN CSV
+        self.download_btn = Button(text="Download", font=("Verdana", 10, "bold"), bg="purple", fg="white",
+                                   highlightthickness=0, command=self.download)
+
         # INITIALIZING REQUIRED ELEMENTS
         self.image = None
         self.file_path = None
@@ -33,6 +38,8 @@ class FileExtract:
         self.hex_codes = []
         self.left_canvas = None
         self.right_canvas = None
+        self.file_name = None
+        self.failed_label = None
 
     def select_image(self):
         self.destroy_items()
@@ -44,10 +51,10 @@ class FileExtract:
         if file != "":
             try:
                 # GET THE SELECTED FILE NAME
-                file_name = os.path.basename(file)
+                self.file_name = os.path.basename(file)
 
                 # SHOWING SELECTED FILE NAME IN UI TO THE USER
-                self.file_path = self.canvas.create_text((170, 270), width=150, text=file_name, fill="#FF004D",
+                self.file_path = self.canvas.create_text((170, 270), width=150, text=self.file_name, fill="#FF004D",
                                                          font=("Verdana", 8, "bold"))
 
                 # POPULATING IMAGE CANVAS WITH SELECTED IMAGE
@@ -63,6 +70,9 @@ class FileExtract:
                 self.image_canvas.delete("all")
                 self.image_canvas.create_image(75, 75, anchor="center", image=self.image)
 
+                # SHOW THE DOWNLOAD BUTTON
+                self.download_btn.place(x=550, y=60)
+
                 # CALL GENERATE COLOR FUNCTION TO EXTRACT COLOR FROM SELECTED IMAGE
                 self.generate_color(file)
 
@@ -70,18 +80,18 @@ class FileExtract:
                 print(f"An error occurred: {e}")
 
                 # SHOWING THE ERROR TO THE USER IF OCCURRED ANY
-                failed_label = self.canvas.create_text((375, 150), text=f"Error Occurred : {e}",
-                                                       font=("Verdana", 8, "bold"), fill="red")
+                self.failed_label = self.canvas.create_text((375, 150), text=f"Error Occurred : {e}",
+                                                            font=("Verdana", 8, "bold"), fill="red")
                 self.image_canvas.destroy()
 
                 # DELETE THE FAILED MESSAGE AFTER 5 SECONDS
-                self.canvas.after(5000, lambda: self.canvas.delete(failed_label))
+                self.canvas.after(5000, lambda: self.canvas.delete(self.failed_label))
         else:
             # SHOW FAILED MESSAGE WHEN USER TRY TO EXTRACT COLOR WITHOUT SELECTING IMAGE
-            failed_label = self.canvas.create_text((375, 150), text=f"Select the File to Harvest Color",
-                                                   font=("Verdana", 8, "bold"), fill="red")
+            self.failed_label = self.canvas.create_text((375, 150), text=f"Select the File to Harvest Color",
+                                                        font=("Verdana", 8, "bold"), fill="red")
             self.image_canvas.destroy()
-            self.canvas.after(5000, lambda: self.canvas.delete(failed_label))
+            self.canvas.after(5000, lambda: self.canvas.delete(self.failed_label))
 
     def generate_color(self, image):
         # EXTRACTING COLORS THROUGH COLORGRAM LIBRARY
@@ -176,6 +186,24 @@ class FileExtract:
         # CONVERTING RGB TO HEX CODE
         self.hex_codes.append("#{:02x}{:02x}{:02x}".format(rgb[0], rgb[1], rgb[2]))
 
+    def download(self):
+        # CREATING DATAFRAME USING HEX AND RGB CODE FOR DOWNLOAD CSV
+        data = {
+            "Hex Code": self.hex_codes,
+            "RGB Code": self.rgb_colors
+        }
+        df = pd.DataFrame(data)
+        df.index = df.index + 1
+
+        # ASKING DIRECTORY TO STORE THE CSV FILE
+        file_path = filedialog.asksaveasfilename(defaultextension=".csv",
+                                                 filetypes=[("CSV files", "*.csv")],
+                                                 initialfile=f"colors_{self.file_name}.csv")
+        if file_path:
+            df.to_csv(file_path)
+            messagebox.showinfo("Information", f"Color data downloaded successfully in "
+                                               f"\n\n{file_path}")
+
     def destroy_items(self):
         # DESTROY ITEMS IN THE CANVAS WHEN USER TRY TO SELECTING DIFFERENT IMAGE
         if self.image_canvas is not None:
@@ -186,6 +214,9 @@ class FileExtract:
             self.right_canvas.destroy()
         if self.file_path is not None:
             self.canvas.delete(self.file_path)
+        if self.failed_label is not None:
+            self.canvas.delete(self.failed_label)
+        self.download_btn.place_forget()
 
     def go_home_callback(self):
         # DESTROY ALL ITEMS IN THE WINDOW WHEN USER TRY TO GO HOME
