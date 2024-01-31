@@ -52,6 +52,6 @@ This project is licensed under the [MIT License](LICENSE.md).
 
 If you find my work helpful or inspiring and would like to support me, you can buy me a coffee!
 
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="santhoshkumar2298" data-color="#c800ff" data-emoji="☕" data-font="Bree" data-text="Buy me a coffee" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00"></script>
+[<a href="https://www.buymeacoffee.com/santhoshkumar2298"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=santhoshkumar2298&button_colour=c800ff&font_colour=ffffff&font_family=Bree&outline_colour=ffffff&coffee_colour=FFDD00" /></a>]
 
 Your support is greatly appreciated!
