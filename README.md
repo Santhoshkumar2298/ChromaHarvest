@@ -9,7 +9,7 @@ A simple and interactive Color extractor created with Python.
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
 - [License](#license)
-- [Support Me](#support)
+- [Support Me](#support-me)
 
 ## Overview
 
