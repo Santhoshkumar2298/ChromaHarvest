@@ -52,6 +52,7 @@ This project is licensed under the [MIT License](LICENSE.md).
 
 If you find my work helpful or inspiring and would like to support me, you can buy me a coffee!
 
-[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-red.png)]([https://www.buymeacoffee.com/santhoshkumar2298])
+[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-red.png)](https://www.buymeacoffee.com/santhoshkumar2298)
 
 Your support is greatly appreciated!
+
